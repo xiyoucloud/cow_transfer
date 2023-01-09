@@ -1,12 +1,12 @@
-# cow_download
+# cow_transfer
 
-## 下载
+## 安装
 ```
 pip install cow_transfer
 ```
 ## 使用
 
-### 下载
+### 文件下载
 一个完整的奶牛快传的文章下载链接就像这样：https://xiyoucloud.cowtransfer.com/s/9f9b7c098b9049  
 你可以根据文件的 id 来下载文件 9f9b7c098b9049。
 ```
@@ -22,7 +22,7 @@ Options:
   --help                 Show this message and exit.
 ```
 
-### 上传
+### 文件上传
 ```
 Usage: cow upload [OPTIONS]
 
@@ -50,6 +50,6 @@ pip install wheel
 # 打包
 python setup.py bdist_wheel sdist
 
-# 上传打包后的 python 包
+# 上传打包后的 python 包到 https://pypi.org
 twine upload dist/*
 ```
