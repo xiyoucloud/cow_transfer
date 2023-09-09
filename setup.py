@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = 'Easily downlaod file from CowTransfer'
 
 setup(
@@ -13,7 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=open('README.md', encoding="UTF8").read(),
     packages=find_packages(),
-    install_requires=['DownloadKit', 'requests'],
+    install_requires=['DownloadKit', 'requests', 'oss2', 'tqdm', 'click'],
     keywords=['python', 'DownloadKit', 'cow_transfer'],
     entry_points={
     'console_scripts': [

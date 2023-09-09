@@ -87,7 +87,6 @@ def download_file(unique_url, target=None, threads=20):
             target = target
         else:
             raise BaseException("保存目录需要是一个已存在的目录, 如果不设置，默认为当前目录")
-    print('target', target)
     d.global_path = target
     d.roads = threads            
     d.add(download_url, goal_path=target,  stream=True)
