@@ -3,20 +3,18 @@ import os
 import sys
 import requests
 
-
 dirname = os.path.dirname(__file__)
 # 创建下载器对象
-d = DownloadKit()
+d = DownloadKit(roads=20)
 # 线程数
-d.roads = 20
 # 大文件分块大小，默认 20MB
 d.block_size = '50M'
 # 设置文件保存路径
 d.global_path = dirname
 # 设置重试次数
-d.retry = 5
-# 设置失败重试间隔，初始 5
-d.interval = 5
+d.set.retry(8)
+# 设置失败重试间隔
+d.set.retry(8)
 # 设置存在文件名冲突时的处理方式 skip overwrite rename
 d.file_exists = 'rename'
 HOST = 'https://cowtransfer.com'
@@ -88,10 +86,10 @@ def download_file(unique_url, target=None, threads=20):
         else:
             raise BaseException("保存目录需要是一个已存在的目录, 如果不设置，默认为当前目录")
     d.global_path = target
-    d.roads = threads            
-    d.add(download_url, goal_path=target,  stream=True)
+    d.set.roads(threads)
+    d.add(download_url, goal_path=target, stream=True)
     d.show()
-    
+
 
 def show_help():
     sys.stdout.write(
