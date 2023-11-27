@@ -19,6 +19,7 @@ Options:
   -u, --urlcode TEXT     urlcode for download file  [required]       
   -t, --threads INTEGER  set threads for download file  [default: 20]
   -p, --path PATH        set save path for download file
+  -c, --cookie_path PATH cookie file path
   --help                 Show this message and exit.
 ```
 
@@ -47,6 +48,7 @@ Options:
 ```
 # 安装依赖
 pip install wheel
+pip install twine
 # 打包
 python setup.py bdist_wheel sdist
 

@@ -14,6 +14,7 @@ def cli():
     """upload and download - v0.1.5"""
     pass
 
+
 @cli.command()
 @click.option("--authorization", type=str, prompt="用户 authorization", help="用户 authorization", required=True)
 @click.option("--remember_mev2", type=str, prompt="用户 remember-mev2", help="用户 remember-mev2", required=True)
@@ -44,10 +45,12 @@ def upload(authorization, remember_mev2, upload_path, folder_name, title, messag
 @click.option("-t", "--threads", default=20, help="set threads for download file", show_default=True)
 # 可选，默认值
 @click.option("-p", "--path", type=click.Path(exists=True), help="set save path for download file", default=".")
-def download(urlcode, threads, path):
-    download_file(urlcode, target=path, threads=threads)
+# 可选，默认值
+@click.option("-c", "--cookie_path", type=click.Path(exists=True), help="cookie file path",
+              default="./cookie")
+def download(urlcode, threads, path, cookie_path):
+    download_file(urlcode, target=path, threads=threads, cookie_file_path=cookie_path)
 
 
 if __name__ == "__main__":
     cli()
-

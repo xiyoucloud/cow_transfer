@@ -23,7 +23,7 @@ SUCCESS_CODE = '0000'
 
 def get_unique_url(download_code):
     url = f"{HOST}/core/api/transfer/share/precheck?downloadCode={download_code}"
-    response = requests.get(url).json()
+    response = requests.get(url, headers=common_header).json()
     if response['code'] != SUCCESS_CODE:
         raise BaseException("获取uniqueUrl失败")
     return response['data']['uniqueUrl']
@@ -31,7 +31,7 @@ def get_unique_url(download_code):
 
 def get_permission_info(unique_url):
     url = f"{HOST}/core/api/transfer/share/precheck?uniqueUrl={unique_url}"
-    response = requests.get(url).json()
+    response = requests.get(url, headers=common_header).json()
     if response['code'] != SUCCESS_CODE:
         raise BaseException("获取权限信息失败")
     if response['data']['needPassword']:
@@ -41,7 +41,7 @@ def get_permission_info(unique_url):
 
 def get_file_details(unique_url):
     url = f"{HOST}/core/api/transfer/share?uniqueUrl={unique_url}"
-    response = requests.get(url).json()
+    response = requests.get(url, headers=common_header).json()
     if response['code'] != SUCCESS_CODE:
         raise BaseException("获取文件详情失败")
     file_details = response['data']['firstFile']
@@ -56,7 +56,7 @@ def get_file_details(unique_url):
 
 def get_download_url(file_details):
     url = f"{HOST}/core/api/transfer/share/download?transferGuid={file_details['guid']}&title={file_details['title']}&fileId={file_details['file_id']}"
-    response = requests.get(url).json()
+    response = requests.get(url, headers=common_header).json()
     if response['code'] != SUCCESS_CODE:
         raise BaseException("获取下载URL失败")
     return response['data']['downloadUrl']
@@ -74,7 +74,14 @@ def process_bar(num, total):
     sys.stdout.flush()
 
 
-def download_file(unique_url, target=None, threads=20):
+def download_file(unique_url, target=None, threads=20, cookie_file_path=None):
+    if cookie_file_path is None:
+        cookie_file_path = './cookie'
+    cookie = get_str_from_file(cookie_file_path)
+    global common_header
+    common_header = {
+        'cookie': cookie
+    }
     get_permission_info(unique_url)
     file_details = get_file_details(unique_url)
     download_url = get_download_url(file_details)
@@ -97,6 +104,11 @@ def show_help():
     sys.stdout.flush()
 
 
+def get_str_from_file(file_path):
+    with open(file_path, "r") as file:
+        return str(file.read()).removesuffix("\n")
+
+
 if __name__ == "__main__":
     arg_len = len(sys.argv)
     if arg_len <= 1:
@@ -105,14 +117,17 @@ if __name__ == "__main__":
     if command == 'download':
         unique_url = None
         save_target = None
-        if arg_len == 3:
+        cookie_file_path = None
+        if arg_len == 4:
             unique_url = sys.argv[2]
-        elif arg_len == 4:
+            cookie_file_path = sys.argv[3]
+        elif arg_len == 5:
             unique_url = sys.argv[2]
             save_target = sys.argv[3]
+            cookie_file_path = sys.argv[4]
         else:
             raise SyntaxError("不合法的参数个数")
-        download_file(unique_url, save_target)
+        download_file(unique_url, save_target, cookie_file_path)
     elif command == 'help':
         show_help()
     else:
