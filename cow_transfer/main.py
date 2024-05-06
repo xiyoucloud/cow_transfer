@@ -12,12 +12,11 @@ import click
 @click.group()
 def cli():
     """upload and download - v0.1.5"""
-    pass
 
 
 @cli.command()
-@click.option("--authorization", type=str, prompt="用户 authorization", help="用户 authorization", required=True)
-@click.option("--remember_mev2", type=str, prompt="用户 remember-mev2", help="用户 remember-mev2", required=True)
+@click.option("-h", "--header_file_path", type=click.Path(exists=True), help="header file path",
+              default="./header.txt")
 @click.option("--upload_path", type=str, prompt="待上传文件或目录路径", help="待上传文件或目录路径", required=True)
 @click.option("--folder_name", type=str, help="文件夹名称", default="")
 @click.option("--title", type=str, help="传输标题", default="")
@@ -25,10 +24,17 @@ def cli():
 @click.option("--valid_days", type=int, help="传输有效期（天）", default=7, show_default=True)
 @click.option("--chunk_size", type=int, help="分块大小（字节）", default=2097152, show_default=True)
 @click.option("--threads", type=int, help="上传并发数", default=5, show_default=True)
-def upload(authorization, remember_mev2, upload_path, folder_name, title, message, valid_days, chunk_size, threads):
+def upload(header_file_path, upload_path, folder_name, title, message, valid_days,
+           chunk_size, threads):
     """CowTransfer - 奶牛快传"""
-    # 如果传入特殊字符，就获取 xiyouyun 的 author 和 remember
-    thread = CowUploader(authorization, remember_mev2, upload_path, folder_name,
+    upload_file(header_file_path, upload_path, folder_name, title, message, valid_days,
+                chunk_size, threads)
+
+
+def upload_file(header_file_path, upload_path, folder_name, title, message, valid_days,
+                chunk_size, threads):
+    # TODO 如果传入特殊字符，就获取 xiyou 的 author 和 remember
+    thread = CowUploader(header_file_path, upload_path, folder_name,
                          title, message, valid_days, chunk_size, threads)
     if thread.start_upload():
         click.echo(f"链接：{thread.upload_info.get('transfer_url')}\n"
@@ -46,11 +52,13 @@ def upload(authorization, remember_mev2, upload_path, folder_name, title, messag
 # 可选，默认值
 @click.option("-p", "--path", type=click.Path(exists=True), help="set save path for download file", default=".")
 # 可选，默认值
-@click.option("-c", "--cookie_path", type=click.Path(exists=True), help="cookie file path",
-              default="./cookie")
-def download(urlcode, threads, path, cookie_path):
-    download_file(urlcode, target=path, threads=threads, cookie_file_path=cookie_path)
+@click.option("-h", "--header_file_path", type=click.Path(exists=True), help="header file path",
+              default="./header.txt")
+def download(urlcode, threads, path, header_file_path):
+    download_file(urlcode, target=path, threads=threads, header_file_path=header_file_path)
 
 
 if __name__ == "__main__":
+    # download_file('bdae5a8fc3444b', ".", 20, "./header.txt")
+    # upload_file("./header.txt", "./DSCF0001123.jpg", "", "", "", 1, 2097152, 5)
     cli()

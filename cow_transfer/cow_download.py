@@ -3,6 +3,8 @@ import os
 import sys
 import requests
 
+from cow_transfer.util import get_str_arr_split_by_new_line_from_file, build_request_header
+
 dirname = os.path.dirname(__file__)
 # 创建下载器对象
 d = DownloadKit(roads=20)
@@ -74,14 +76,13 @@ def process_bar(num, total):
     sys.stdout.flush()
 
 
-def download_file(unique_url, target=None, threads=20, cookie_file_path=None):
-    if cookie_file_path is None:
-        cookie_file_path = './cookie'
-    cookie = get_str_from_file(cookie_file_path)
+def download_file(unique_url, target=None, threads=20, header_file_path=None):
+    if header_file_path is None:
+        header_file_path = './header.txt'
+    if not os.path.exists(header_file_path):
+        raise SyntaxError("请添加header.txt文件")
     global common_header
-    common_header = {
-        'cookie': cookie
-    }
+    common_header = build_request_header(get_str_arr_split_by_new_line_from_file(header_file_path))
     get_permission_info(unique_url)
     file_details = get_file_details(unique_url)
     download_url = get_download_url(file_details)
@@ -117,17 +118,17 @@ if __name__ == "__main__":
     if command == 'download':
         unique_url = None
         save_target = None
-        cookie_file_path = None
+        header_file_path = None
         if arg_len == 4:
             unique_url = sys.argv[2]
-            cookie_file_path = sys.argv[3]
+            header_file_path = sys.argv[3]
         elif arg_len == 5:
             unique_url = sys.argv[2]
             save_target = sys.argv[3]
-            cookie_file_path = sys.argv[4]
+            header_file_path = sys.argv[4]
         else:
             raise SyntaxError("不合法的参数个数")
-        download_file(unique_url, save_target, cookie_file_path)
+        download_file(unique_url, save_target, header_file_path=header_file_path)
     elif command == 'help':
         show_help()
     else:

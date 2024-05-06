@@ -7,6 +7,8 @@ from tqdm import tqdm
 from oss2.models import PartInfo
 from concurrent.futures import ThreadPoolExecutor
 
+from cow_transfer.util import build_request_header, get_str_arr_split_by_new_line_from_file
+
 requests.adapters.DEFAULT_RETRIES = 3
 
 debug = False
@@ -21,8 +23,7 @@ def log(text: str) -> str:
 class CowUploader(threading.Thread):
 
     def __init__(self,
-                 authorization: str,
-                 remember_mev2: str,
+                 header_file_path: str,
                  upload_path: str,
                  folder_name: str = "",
                  title: str = "",
@@ -45,8 +46,7 @@ class CowUploader(threading.Thread):
         super(CowUploader, self).__init__()
 
         # 参数
-        self.authorization = authorization
-        self.remember_mev2 = remember_mev2
+        self.header_file_path = header_file_path
         self.upload_path = upload_path
         self.folder_name = folder_name
         self.title = title
@@ -63,11 +63,7 @@ class CowUploader(threading.Thread):
             "complete": False
         }
         self.transfer_info = {}
-        self.auth_headers = {
-            "cookie": f"{self.remember_mev2}; cow-auth-token={self.authorization}",
-            "authorization": self.authorization,
-            "Connection": "close"
-        }
+        self.auth_headers = build_request_header(get_str_arr_split_by_new_line_from_file(header_file_path))
 
         # 对象
         self.executor = None
@@ -137,11 +133,6 @@ class CowUploader(threading.Thread):
     def check(self) -> bool:
         """检查"""
 
-        # 缺少 remember_mev2 或 authorization
-        if not all([self.remember_mev2, self.authorization]):
-            self.err = "错误：缺少 remember_mev2 或 authorization"
-            return False
-
         # 待上传文件或目录
         if not os.path.exists(self.upload_path):
             self.err = "错误：待上传文件或目录不存在"
@@ -180,7 +171,8 @@ class CowUploader(threading.Thread):
             resp_json = req_resp.json()
             if "code" in resp_json and resp_json["code"] == "0000":
                 self.transfer_info.update(resp_json["data"])
-                self.upload_info["transfer_url"] = self.upload_info["url_prefix"] + resp_json["data"]["uniqueUrl"]  # 传输链接
+                self.upload_info["transfer_url"] = self.upload_info["url_prefix"] + resp_json["data"][
+                    "uniqueUrl"]  # 传输链接
                 self.upload_info["transfer_code"] = resp_json["data"]["downloadCode"]  # 传输取件码
                 return True
             else:
@@ -203,7 +195,8 @@ class CowUploader(threading.Thread):
             self.upload_info["mode"] = "single"
             self.file_dict["1"] = {
                 "file_name": os.path.basename(self.upload_path),
-                "file_format": os.path.basename(self.upload_path).split(".")[-1] if "." in os.path.basename(self.upload_path) else "unknow",
+                "file_format": os.path.basename(self.upload_path).split(".")[-1] if "." in os.path.basename(
+                    self.upload_path) else "unknow",
                 "rel_path": "\\" + os.path.basename(self.upload_path),
                 "abs_path": os.path.abspath(self.upload_path),
                 "file_size": os.path.getsize(self.upload_path),
@@ -223,7 +216,8 @@ class CowUploader(threading.Thread):
                 for file in files:
                     self.file_dict[str(len(self.file_dict) + 1)] = {
                         "file_name": os.path.basename(file),
-                        "file_format": os.path.basename(file).split(".")[-1] if "." in os.path.basename(file) else "unknow",
+                        "file_format": os.path.basename(file).split(".")[-1] if "." in os.path.basename(
+                            file) else "unknow",
                         "rel_path": os.path.abspath(os.path.join(root, file)).replace(root_path, ""),
                         "abs_path": os.path.abspath(os.path.join(root, file)),
                         "file_size": os.path.getsize(os.path.join(root, file)),

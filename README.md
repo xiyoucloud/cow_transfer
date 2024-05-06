@@ -19,7 +19,7 @@ Options:
   -u, --urlcode TEXT     urlcode for download file  [required]       
   -t, --threads INTEGER  set threads for download file  [default: 20]
   -p, --path PATH        set save path for download file
-  -c, --cookie_path PATH cookie file path
+  -h, --header_file_path PATH header file path
   --help                 Show this message and exit.
 ```
 
@@ -30,8 +30,7 @@ Usage: cow upload [OPTIONS]
   CowTransfer - 奶牛快传
 
 Options:
-  --authorization TEXT  用户 authorization  [required]
-  --remember_mev2 TEXT  用户 remember-mev2  [required]
+  --header_file_path PATH header file path
   --upload_path TEXT    待上传文件或目录路径  [required]
   --folder_name TEXT    文件夹名称
   --title TEXT          传输标题
