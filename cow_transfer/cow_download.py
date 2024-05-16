@@ -1,9 +1,10 @@
-from DownloadKit import DownloadKit
 import os
 import sys
-import requests
 
-from cow_transfer.util import get_str_arr_split_by_new_line_from_file, build_request_header
+import requests
+from DownloadKit import DownloadKit
+
+from cow_transfer.util import get_headers_from_curl_file
 
 dirname = os.path.dirname(__file__)
 # 创建下载器对象
@@ -82,7 +83,7 @@ def download_file(unique_url, target=None, threads=20, header_file_path=None):
     if not os.path.exists(header_file_path):
         raise SyntaxError("请添加header.txt文件")
     global common_header
-    common_header = build_request_header(get_str_arr_split_by_new_line_from_file(header_file_path))
+    common_header = get_headers_from_curl_file(header_file_path)
     get_permission_info(unique_url)
     file_details = get_file_details(unique_url)
     download_url = get_download_url(file_details)

@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
-import os
 
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 DESCRIPTION = 'Easily downlaod file from CowTransfer'
 
 setup(
@@ -16,13 +15,13 @@ setup(
     install_requires=['DownloadKit', 'requests', 'oss2', 'tqdm', 'click'],
     keywords=['python', 'DownloadKit', 'cow_transfer'],
     entry_points={
-    'console_scripts': [
-        'cow = cow_transfer.main:cli'
-    ]
+        'console_scripts': [
+            'cow = cow_transfer.main:cli'
+        ]
     },
     license="MIT",
     url="https://github.com/xiyoucloud/cow_transfer.git",
-    classifiers= [
+    classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",

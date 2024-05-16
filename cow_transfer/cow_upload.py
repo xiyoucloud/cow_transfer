@@ -1,13 +1,14 @@
 import os
-import oss2
-import time
-import requests
 import threading
-from tqdm import tqdm
-from oss2.models import PartInfo
+import time
 from concurrent.futures import ThreadPoolExecutor
 
-from cow_transfer.util import build_request_header, get_str_arr_split_by_new_line_from_file
+import oss2
+import requests
+from oss2.models import PartInfo
+from tqdm import tqdm
+
+from cow_transfer.util import get_headers_from_curl_file
 
 requests.adapters.DEFAULT_RETRIES = 3
 
@@ -63,7 +64,7 @@ class CowUploader(threading.Thread):
             "complete": False
         }
         self.transfer_info = {}
-        self.auth_headers = build_request_header(get_str_arr_split_by_new_line_from_file(header_file_path))
+        self.auth_headers = get_headers_from_curl_file(header_file_path)
 
         # 对象
         self.executor = None

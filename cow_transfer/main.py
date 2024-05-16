@@ -1,12 +1,11 @@
-import sys
+import click
+
 from cow_transfer.cow_download import (
     download_file
 )
 from cow_transfer.cow_upload import (
     CowUploader
 )
-import argparse
-import click
 
 
 @click.group()
@@ -59,6 +58,6 @@ def download(urlcode, threads, path, header_file_path):
 
 
 if __name__ == "__main__":
-    # download_file('bdae5a8fc3444b', ".", 20, "./header.txt")
+    # download_file('de210271491e4f', ".", 20, "./header.txt")
     # upload_file("./header.txt", "./DSCF0001123.jpg", "", "", "", 1, 2097152, 5)
     cli()
